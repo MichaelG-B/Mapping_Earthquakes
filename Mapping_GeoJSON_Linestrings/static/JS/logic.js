@@ -2,7 +2,7 @@
 console.log("working");
 
   // We create the street view tile layer that will be the default background of our map.
-let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+let light = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     accessToken: API_KEY
@@ -31,18 +31,27 @@ let map = L.map('mapid', {
 // Pass our map layers into our layers control and add the layers control to the map.
 L.control.layers(baseMaps).addTo(map);
 
-// Accessing the airport GeoJSON URL
-let airportData = "https://raw.githubusercontent.com/MichaelG-B/Mapping_Earthquakes/Map_Multiple_GeoJSON_Points/Map_Multiple_GeoJSON_Points/static/majorAirports.json";
+// Accessing the Toronto airline routes GeoJSON URL.
+let torontoData = "https://raw.githubusercontent.com/MichaelG-B/Mapping_Earthquakes/Mapping_GeoJSON_Linestrings/Mapping_GeoJSON_Linestrings/torontoRoutes.json";
+
+// Create a style for the lines.
+let myStyle = {
+  color: "#ffffa1",
+  weight: 2
+}
 
 // Grabbing our GeoJSON data.
-d3.json(airportData).then(function(data) {
+d3.json(torontoData).then(function(data) {
   console.log(data);
+// Creating a GeoJSON layer with the retrieved data.
+L.geoJSON(data).addTo(map);
 
 // Creating a GeoJSON layer with the retrieved data.
 L.geoJSON(data, {
-    onEachFeature: function(feature, layer) {
+  style: myStyle,
+  onEachFeature: function(feature, layer) {
       console.log(layer);
-      layer.bindPopup( "<h>" + "Airport code: " + feature.properties.faa + "<br>" + "Airport name: " + feature.properties.name + "<h>" );
+      layer.bindPopup( "<h>" + "Airline: " + feature.properties.airline + "<br>" + "Destination: " + feature.properties.dst + "<h>" );
     }
   
   }).addTo(map);
